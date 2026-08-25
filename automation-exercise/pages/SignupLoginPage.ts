@@ -9,13 +9,14 @@ export class SignupLoginPage {
   readonly nameInput: Locator;
   readonly emailInput: Locator;
   readonly signupButton: Locator;
-
+  readonly existingAccountError: Locator;
   // LOGIN
 
   readonly loginForm: Locator;
   readonly loginHeader: Locator;
   readonly emailLoginInput: Locator;
   readonly passwordLoginInput: Locator;
+  readonly incorrectPasswordError: Locator;
   readonly loginButton: Locator;
 
   constructor(page: Page) {
@@ -27,6 +28,7 @@ export class SignupLoginPage {
     this.nameInput = this.signupForm.getByPlaceholder("Name");
     this.emailInput = this.signupForm.getByPlaceholder("Email Address");
     this.signupButton = this.signupForm.getByRole("button", { name: "Signup" });
+    this.existingAccountError = page.getByText("Email Address already exist!");
 
     // LOGIN LOCATORS
 
@@ -38,6 +40,9 @@ export class SignupLoginPage {
     this.passwordLoginInput = this.loginForm.locator(
       '[data-qa="login-password"]',
     );
+    this.incorrectPasswordError = this.loginForm.getByText(
+      "Your email or password is incorrect!",
+    );
 
     this.loginButton = this.loginForm.getByRole("button", { name: "Login" });
   }
@@ -48,6 +53,14 @@ export class SignupLoginPage {
 
   async verifyLoginHeaderVisible() {
     await expect(this.loginHeader).toBeVisible();
+  }
+
+  async verifyIncorrectPasswordErrorVisibility() {
+    await expect(this.incorrectPasswordError).toBeVisible();
+  }
+
+  async verifyExistingAccountError() {
+    await expect(this.existingAccountError).toBeVisible();
   }
 
   async fillInitialSignup(name: string, email: string) {

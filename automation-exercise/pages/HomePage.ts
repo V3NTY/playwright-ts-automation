@@ -9,6 +9,7 @@ export class HomePage {
   readonly deleteAccountLink: Locator;
   readonly deletedAccountHeader: Locator;
   readonly continueBtn: Locator;
+  readonly logoutBtn: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -19,6 +20,7 @@ export class HomePage {
     this.deleteAccountLink = page.getByRole("link", { name: "Delete Account" });
     this.deletedAccountHeader = page.locator('[data-qa="account-deleted"]');
     this.continueBtn = page.locator('[data-qa="continue-button"]');
+    this.logoutBtn = page.getByRole("link", { name: "Logout" });
   }
 
   async goto() {
@@ -44,6 +46,10 @@ export class HomePage {
 
   async clickDeleteAccount() {
     await this.deleteAccountLink.click();
+  }
+
+  async clickLogout() {
+    await this.logoutBtn.click();
   }
 
   async verifyAndConfirmAccountDeletion() {

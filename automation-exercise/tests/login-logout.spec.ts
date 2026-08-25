@@ -14,20 +14,7 @@ test.describe("Login User", () => {
     await homePage.verifyHomePageLoaded();
   });
 
-  test("Login and Delete User Account", async () => {
-    // const randomUser = {
-    //   name: faker.person.fullName(),
-    //   firstName: faker.person.firstName(),
-    //   lastName: faker.person.lastName(),
-    //   email: `${faker.person.firstName().toLowerCase()}.${faker.person.lastName().toLowerCase()}+${Date.now()}@xyz.com`,
-    //   password: "Password123!",
-    //   address: faker.location.streetAddress(),
-    //   state: faker.location.state(),
-    //   city: faker.location.city(),
-    //   zipCode: faker.location.zipCode(),
-    //   phoneNumber: faker.phone.number(),
-    // };
-
+  test("Correct Login and Delete User Account", async () => {
     await homePage.goToSignupLogin();
     await signupLoginPage.verifyLoginHeaderVisible();
     await signupLoginPage.fillLoginCredentials(email, password);
@@ -44,5 +31,26 @@ test.describe("Login User", () => {
     // await homePage.verifyUserLoggedIn();
     // await homePage.clickDeleteAccount();
     // await registerPage.verifyAndConfirmAccountDeletion();
+  });
+
+  test("Logout User", async () => {
+    await homePage.goToSignupLogin();
+    await signupLoginPage.verifyLoginHeaderVisible();
+    await signupLoginPage.fillLoginCredentials(email, password);
+    await signupLoginPage.clickLogin();
+    await homePage.verifyUserLoggedIn();
+    await homePage.clickLogout();
+    await signupLoginPage.verifyLoginHeaderVisible();
+  });
+
+  test("Incorrect Login", async () => {
+    await homePage.goToSignupLogin();
+    await signupLoginPage.verifyLoginHeaderVisible();
+    await signupLoginPage.fillLoginCredentials(
+      "incorrectemail@xyz.com",
+      "sadsanioasnd",
+    );
+    await signupLoginPage.clickLogin();
+    await signupLoginPage.verifyIncorrectPasswordErrorVisibility();
   });
 });

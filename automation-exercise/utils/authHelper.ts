@@ -1,12 +1,15 @@
-import fs from 'fs';
-import path from 'path';
+import fs from "fs";
+import path from "path";
 
-const authFilePath = path.join(process.cwd(), '.auth', 'user.json');
+const authFilePath = path.join(process.cwd(), ".auth", "user.json");
 
 /**
  * Zapisuje lub aktualizuje konkretny klucz w pliku .auth/user.json
  */
-export function updateAuthCredentials(data: { email?: string; password?: string }) {
+export function updateAuthCredentials(data: {
+  email?: string;
+  password?: string;
+}) {
   // 1. Upewnij się, że katalog .auth istnieje
   const dir = path.dirname(authFilePath);
   if (!fs.existsSync(dir)) {
@@ -17,7 +20,7 @@ export function updateAuthCredentials(data: { email?: string; password?: string 
   let currentData: { email?: string; password?: string } = {};
   if (fs.existsSync(authFilePath)) {
     try {
-      const fileContent = fs.readFileSync(authFilePath, 'utf-8');
+      const fileContent = fs.readFileSync(authFilePath, "utf-8");
       currentData = JSON.parse(fileContent);
     } catch {
       currentData = {};
@@ -28,5 +31,13 @@ export function updateAuthCredentials(data: { email?: string; password?: string 
   const updatedData = { ...currentData, ...data };
 
   // 4. Zapisz zaktualizowany obiekt z powrotem do pliku
-  fs.writeFileSync(authFilePath, JSON.stringify(updatedData, null, 2), 'utf-8');
+  fs.writeFileSync(authFilePath, JSON.stringify(updatedData, null, 2), "utf-8");
+}
+
+export function readSavedCredentials(): { email?: string; password?: string } {
+  if (!fs.existsSync(authFilePath)) {
+    throw new Error(`Plik ${authFilePath} nie istnieje!`);
+  }
+  const rawData = fs.readFileSync(authFilePath, "utf-8");
+  return JSON.parse(rawData);
 }
