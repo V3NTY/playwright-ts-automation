@@ -11,19 +11,27 @@ test.describe("Products page", () => {
 
     await homePage.goto();
     await homePage.verifyHomePageLoaded();
+    await homePage.goToProducts();
   });
 
   test("Verify All Products Page", async () => {
-    await homePage.productsLink.click();
     await productsPage.verifyPageLoaded();
     await productsPage.verifyFeaturesItemsVisibility();
   });
 
   test("Verify Single Product Page", async () => {
-    await productsPage.clickFirstProductItemViewProductButton();
+    await productsPage.clickProductItemViewButtonByIndex(0);
     await productsPage.verifyProductDetailsPageVisibility();
     await productsPage.verifyProductDetailsData();
     await productsPage.verifyProductDetailsVisibility();
     // console.log(actualProductDetails);
+  });
+
+  test("Verify Searched Products", async () => {
+    const searchProduct = "Pink";
+    await productsPage.verifyPageLoaded();
+    await productsPage.fillAndSubmitSearchInput(searchProduct);
+    await productsPage.verifySearchProductURL(searchProduct);
+    await productsPage.verifySearchProductsVisibility(searchProduct);
   });
 });

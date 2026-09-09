@@ -14,11 +14,7 @@ test.describe("Contact form", () => {
 
     await homePage.goto();
     await homePage.verifyHomePageLoaded();
-
-    // Spróbuj kliknąć w grippy-host
-
-    // LUB w click-protector
-    // await page.locator(".adsbygoogle #click-protector").click({ force: true });
+    await homePage.goToContactUs();
   });
 
   test("Submit contact form", async () => {
@@ -30,7 +26,6 @@ test.describe("Contact form", () => {
       inputFilePath: "automation-exercise/example-screenshot.jpg",
     };
 
-    await contactForm.contactUsLink.click();
     await contactForm.verifyGetInTouchHeaderVisibility();
     await contactForm.fillContactForm(
       randomTicket.name,

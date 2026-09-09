@@ -1,19 +1,10 @@
 import { Page, Locator, expect } from "@playwright/test";
-
-export interface ProductDetails {
-  name: string;
-  category: string;
-  price: string;
-  availability: string;
-  condition: string;
-  brand: string;
-}
-
+import { ProductDetails } from "../utils/types";
 export class ProductsPage {
   readonly page: Page;
   readonly productsHeader: Locator;
   readonly featuresItemList: Locator;
-  readonly firstProductItemViewProductButton: Locator;
+
   readonly productDetailsPage: Locator;
   readonly productInfo: Locator;
   readonly productName: Locator;
@@ -22,6 +13,16 @@ export class ProductsPage {
   readonly productAvailability: Locator;
   readonly productCondition: Locator;
   readonly productBrand: Locator;
+  readonly searchProductsInput: Locator;
+  readonly searchProductsBtn: Locator;
+  readonly searchedProductsHeader: Locator;
+  readonly productCards: Locator;
+  readonly productNameTitles: Locator;
+  readonly firstProductItemAddToCartButton: Locator;
+  readonly continueShoppingBtn: Locator;
+  readonly viewCartModalLink: Locator;
+  readonly productQuantityInput: Locator;
+  readonly addToCartBtn: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -29,10 +30,7 @@ export class ProductsPage {
       name: "ALL PRODUCTS",
     });
     this.featuresItemList = page.locator(".features_items");
-    this.firstProductItemViewProductButton = page
-      .locator(".features_items")
-      .locator(".choose")
-      .first();
+
     this.productDetailsPage = page.locator(".product-details");
     this.productInfo = page.locator(".product-information");
     this.productName = this.productInfo.locator("h2");
@@ -49,6 +47,21 @@ export class ProductsPage {
     this.productBrand = this.productInfo
       .locator("p", { hasText: "Brand:" })
       .locator("a");
+    this.searchProductsInput = page.getByPlaceholder("Search Product");
+    this.searchProductsBtn = page.locator("#submit_search");
+
+    this.searchedProductsHeader = page.getByRole("heading", {
+      name: "Searched Products",
+    });
+    this.productCards = page.locator(".single-products");
+    this.productNameTitles = page.locator(".productinfo p");
+    this.firstProductItemAddToCartButton = page.locator(".add-to-cart").first();
+    this.continueShoppingBtn = page.getByRole("button", {
+      name: "Continue Shopping",
+    });
+    this.viewCartModalLink = page.getByRole("link", { name: "View Cart" });
+    this.productQuantityInput = page.locator("#quantity");
+    this.addToCartBtn = page.getByRole("button", { name: "Add to cart" });
   }
   private async parseField(locator: Locator, label: string): Promise<string> {
     const text = await locator.innerText();
@@ -69,9 +82,9 @@ export class ProductsPage {
     };
   }
 
-  async goto() {
-    await this.page.goto("/");
-  }
+  // async goto() {
+  //   await this.page.goto("/");
+  // }
 
   async verifyPageLoaded() {
     await expect(this.productsHeader).toBeVisible();
@@ -82,8 +95,13 @@ export class ProductsPage {
     await expect(this.featuresItemList).toBeVisible();
   }
 
-  async clickFirstProductItemViewProductButton() {
-    await this.firstProductItemViewProductButton.click();
+  async clickProductItemViewButtonByIndex(index: number) {
+    const item = this.page
+      .locator(".features_items")
+      .locator(".choose")
+      .nth(index);
+
+    await item.click();
   }
 
   async verifyProductDetailsPageVisibility() {
@@ -112,5 +130,76 @@ export class ProductsPage {
 
     const actualProductDetails = await this.getDetails();
     await expect(actualProductDetails).toEqual(expectedProductDetails);
+  }
+
+  async fillAndSubmitSearchInput(productName: string) {
+    await this.searchProductsInput.fill(productName);
+    await this.searchProductsBtn.click();
+  }
+
+  async verifySearchProductURL(productName: string) {
+    const encodedName = encodeURIComponent(productName);
+
+    const urlRegex = new RegExp(`\\/products\\?search=${encodedName}$`);
+
+    await expect(this.page).toHaveURL(urlRegex);
+  }
+
+  async verifySearchProductsVisibility(searchQuery: string) {
+    await expect(this.searchedProductsHeader).toBeVisible();
+    const count = await this.productCards.count();
+    await expect(
+      count,
+      "Searched items list should not be empty",
+    ).toBeGreaterThan(0);
+
+    for (let i = 0; i < count; i++) {
+      const card = this.productCards.nth(i);
+      const titleLocator = this.productNameTitles.nth(i);
+
+      await expect(card).toBeVisible();
+
+      const titleText = await titleLocator.innerText();
+      await expect(titleText.toLowerCase()).toContain(
+        searchQuery.toLowerCase(),
+      );
+    }
+  }
+
+  async addProductToCartByIndex(index: number): Promise<void> {
+    const product = this.productCards.nth(index);
+    await product.scrollIntoViewIfNeeded();
+    await product.hover();
+
+    const addToCartBtn = product.locator(".overlay-content .add-to-cart");
+    await expect(addToCartBtn).toBeVisible();
+    await addToCartBtn.click();
+  }
+
+  async clickContinueShopping(): Promise<void> {
+    await expect(this.continueShoppingBtn).toBeVisible();
+    await this.continueShoppingBtn.click();
+  }
+
+  async clickViewCart(): Promise<void> {
+    await expect(this.viewCartModalLink).toBeVisible();
+    await this.viewCartModalLink.click();
+  }
+
+  async fillProductQuantity(quantity: number) {
+    await this.productQuantityInput.fill(quantity.toString());
+  }
+
+  async addProductToCart() {
+    await this.addToCartBtn.click();
+  }
+
+  async removeAllAddsFromPage() {
+    // 1. Czyszczenie reklam i nakładek z całej strony
+    await this.page.evaluate(() => {
+      document
+        .querySelectorAll("ins, iframe, .adsbygoogle")
+        .forEach((el) => el.remove());
+    });
   }
 }

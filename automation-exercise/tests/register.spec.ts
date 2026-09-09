@@ -5,6 +5,7 @@ import { SignupLoginPage } from "../pages/SignupLoginPage";
 import { RegisterPage } from "../pages/RegisterPage";
 import { email } from "../../.auth/user.json";
 import { readSavedCredentials } from "../utils/authHelper";
+import { generateRandomUserData } from "../utils/helpers";
 test.describe("Register User", () => {
   let homePage: HomePage;
   let signupLoginPage: SignupLoginPage;
@@ -17,23 +18,13 @@ test.describe("Register User", () => {
 
     await homePage.goto();
     await homePage.verifyHomePageLoaded();
+    await homePage.goToSignupLogin();
   });
 
   test("Register and Delete User Account", async () => {
-    const randomUser = {
-      name: faker.person.fullName(),
-      firstName: faker.person.firstName(),
-      lastName: faker.person.lastName(),
-      email: `${faker.person.firstName().toLowerCase()}.${faker.person.lastName().toLowerCase()}+${Date.now()}@xyz.com`,
-      password: "Password123!",
-      address: faker.location.streetAddress(),
-      state: faker.location.state(),
-      city: faker.location.city(),
-      zipCode: faker.location.zipCode(),
-      phoneNumber: faker.phone.number(),
-    };
+    const randomUser = generateRandomUserData();
 
-    await homePage.goToSignupLogin();
+    // await homePage.goToSignupLogin();
     await signupLoginPage.verifySignupHeaderVisible();
     await signupLoginPage.fillInitialSignup(randomUser.name, randomUser.email);
     await signupLoginPage.clickSignup();
@@ -49,10 +40,11 @@ test.describe("Register User", () => {
   });
 
   test("Register Existing User", async () => {
-    const randomName = faker.person.fullName();
+    const randomUser = generateRandomUserData();
+    const randomName = randomUser.name;
     // Read updated credentials
     const { email } = readSavedCredentials();
-    await homePage.goToSignupLogin();
+    // await homePage.goToSignupLogin();
     await signupLoginPage.verifySignupHeaderVisible();
     await signupLoginPage.fillInitialSignup(randomName, email);
     await signupLoginPage.clickSignup();

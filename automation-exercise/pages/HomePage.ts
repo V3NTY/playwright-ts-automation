@@ -12,6 +12,12 @@ export class HomePage {
   readonly logoutBtn: Locator;
   readonly testCasesLink: Locator;
   readonly productsLink: Locator;
+  readonly subscriptionHeader: Locator;
+  readonly subscriptionEmailInput: Locator;
+  readonly subscribeBtn: Locator;
+  readonly successSubscribeMessage: Locator;
+  readonly cartLink: Locator;
+  readonly contactUsLink: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -27,6 +33,16 @@ export class HomePage {
       .locator(".shop-menu")
       .getByRole("link", { name: "Test Cases" });
     this.productsLink = page.getByRole("link", { name: "Products" });
+    this.subscriptionHeader = page.getByRole("heading", {
+      name: "Subscription",
+    });
+    this.subscriptionEmailInput = page.getByPlaceholder("Your email address");
+    this.subscribeBtn = page.locator("#subscribe");
+    this.successSubscribeMessage = page.getByText(
+      "You have been successfully subscribed!",
+    );
+    this.cartLink = page.getByRole("link", { name: "Cart" });
+    this.contactUsLink = page.getByRole("link", { name: "Contact us" });
   }
 
   async goto() {
@@ -46,6 +62,18 @@ export class HomePage {
     await this.signupLoginLink.click();
   }
 
+  async goToCart() {
+    await this.cartLink.click();
+  }
+
+  async goToContactUs() {
+    await this.contactUsLink.click();
+  }
+
+  async goToProducts() {
+    await this.productsLink.click();
+  }
+
   async verifyUserLoggedIn() {
     await expect(this.loggedInAsText).toBeVisible();
   }
@@ -58,12 +86,23 @@ export class HomePage {
     await this.logoutBtn.click();
   }
 
-  async clickTestCasesLink() {
+  async goToTestCases() {
     await this.testCasesLink.click();
   }
 
   async verifyAndConfirmAccountDeletion() {
     await expect(this.deletedAccountHeader).toBeVisible();
     await this.continueBtn.click();
+  }
+
+  async fillAndSubmitEmailSubscription(email: string) {
+    await this.subscriptionEmailInput.scrollIntoViewIfNeeded();
+    await this.subscriptionHeader.isVisible();
+    await this.subscriptionEmailInput.fill(email);
+    await this.subscribeBtn.click();
+  }
+
+  async verifySuccessMessageVisibility() {
+    await this.successSubscribeMessage.isVisible();
   }
 }

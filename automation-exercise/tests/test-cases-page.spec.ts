@@ -11,10 +11,10 @@ test.describe("Test cases page", () => {
     testCasesPage = new TestCasesPage(page);
     await homePage.goto();
     await homePage.verifyHomePageLoaded();
+    await homePage.goToTestCases();
   });
 
   test("Verify Test Cases Page", async () => {
-    await homePage.clickTestCasesLink();
     await testCasesPage.verifyTestCasesPageVisibility();
   });
 });

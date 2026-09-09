@@ -4,7 +4,7 @@ import {
   generateRandomIndexBetween,
   countSelectorOptions,
 } from "../utils/helpers";
-test.describe("Register User", () => {
+test.skip("Register User", () => {
   test.beforeEach("Verify home page visibility", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: "Consent" }).click();

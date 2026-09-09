@@ -12,10 +12,10 @@ test.describe("Login User", () => {
 
     await homePage.goto();
     await homePage.verifyHomePageLoaded();
+    await homePage.goToSignupLogin();
   });
 
   test("Correct Login and Delete User Account", async () => {
-    await homePage.goToSignupLogin();
     await signupLoginPage.verifyLoginHeaderVisible();
     await signupLoginPage.fillLoginCredentials(email, password);
     await signupLoginPage.clickLogin();
@@ -34,7 +34,6 @@ test.describe("Login User", () => {
   });
 
   test("Logout User", async () => {
-    await homePage.goToSignupLogin();
     await signupLoginPage.verifyLoginHeaderVisible();
     await signupLoginPage.fillLoginCredentials(email, password);
     await signupLoginPage.clickLogin();
@@ -44,7 +43,6 @@ test.describe("Login User", () => {
   });
 
   test("Incorrect Login", async () => {
-    await homePage.goToSignupLogin();
     await signupLoginPage.verifyLoginHeaderVisible();
     await signupLoginPage.fillLoginCredentials(
       "incorrectemail@xyz.com",

@@ -1,19 +1,19 @@
-import { Page, expect, Dialog } from "@playwright/test";
+import { Page, expect, Dialog, Locator } from "@playwright/test";
 
 export class ContactForm {
   readonly page: Page;
-  readonly contactUsLink;
-  readonly contactUsHeader;
-  readonly nameInput;
-  readonly emailInput;
-  readonly subjectInput;
-  readonly messageInput;
-  readonly fileInput;
-  readonly submitBtn;
-  readonly closeAddBtn;
+
+  readonly contactUsHeader: Locator;
+  readonly nameInput: Locator;
+  readonly emailInput: Locator;
+  readonly subjectInput: Locator;
+  readonly messageInput: Locator;
+  readonly fileInput: Locator;
+  readonly submitBtn: Locator;
+  readonly closeAddBtn: Locator;
   constructor(page: Page) {
     this.page = page;
-    this.contactUsLink = page.getByRole("link", { name: "Contact us" });
+
     this.contactUsHeader = page.getByRole("heading", { name: "Contact Us" });
     this.nameInput = page.locator('[data-qa="name"]');
     this.emailInput = page.locator('[data-qa="email"]');
@@ -27,7 +27,7 @@ export class ContactForm {
   }
 
   async verifyGetInTouchHeaderVisibility() {
-    expect(this.contactUsHeader).toBeVisible();
+    await expect(this.contactUsHeader).toBeVisible();
   }
 
   async fillContactForm(
